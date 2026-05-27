@@ -1,299 +1,1418 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-  <script>(function(){if(localStorage.getItem("cc_theme")==="dark")document.documentElement.setAttribute("data-theme","dark");}());</script>
-  <link rel="stylesheet" href="/css/dark.css">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <link rel="icon" href="/assets/campus_logo.svg" type="image/svg+xml">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Dashboard � CampusConnect</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusConnect - Seeker Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
+    body {
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    /* Light Mode (Default) */
+    body.light-mode {
+      background: #f5f7fa;
+      color: #1e293b;
+    }
+
+    body.light-mode .sidebar {
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    }
+
+    body.light-mode .sidebar .nav-item {
+      color: #cbd5e1;
+    }
+
+    body.light-mode .sidebar .nav-item:hover,
+    body.light-mode .sidebar .nav-item.active {
+      background: rgba(249,115,22,0.2);
+      color: #f97316;
+    }
+
+    body.light-mode .sidebar-profile {
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    body.light-mode .profile-info-small .name {
+      color: white;
+    }
+
+    body.light-mode .profile-info-small .rank {
+      color: #94a3b8;
+    }
+
+    body.light-mode .main-content {
+      background: #f5f7fa;
+    }
+
+    body.light-mode .profile-summary,
+    body.light-mode .booking-item,
+    body.light-mode .export-card,
+    body.light-mode .settings-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+    }
+
+    body.light-mode .empty-state {
+      background: white;
+      border: 1px solid #e2e8f0;
+    }
+
+    body.light-mode .empty-state p {
+      color: #64748b;
+    }
+
+    body.light-mode .greeting p,
+    body.light-mode .date {
+      color: #64748b;
+    }
+
+    body.light-mode .input-field,
+    body.light-mode select,
+    body.light-mode textarea {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      color: #1e293b;
+    }
+
+    /* Dark Mode */
+    body.dark-mode {
+      background: #0f0f12;
+      color: #ffffff;
+    }
+
+    body.dark-mode .sidebar {
+      background: #0a0a0c;
+      border-right: 1px solid rgba(255,255,255,0.08);
+    }
+
+    body.dark-mode .sidebar .nav-item {
+      color: #a1a1aa;
+    }
+
+    body.dark-mode .sidebar .nav-item:hover,
+    body.dark-mode .sidebar .nav-item.active {
+      background: rgba(249,115,22,0.15);
+      color: #f97316;
+    }
+
+    body.dark-mode .sidebar-profile {
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    body.dark-mode .profile-info-small .name {
+      color: white;
+    }
+
+    body.dark-mode .profile-info-small .rank {
+      color: #a1a1aa;
+    }
+
+    body.dark-mode .profile-summary,
+    body.dark-mode .booking-item,
+    body.dark-mode .export-card,
+    body.dark-mode .settings-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    body.dark-mode .empty-state {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    body.dark-mode .empty-state p {
+      color: #a1a1aa;
+    }
+
+    body.dark-mode .greeting p,
+    body.dark-mode .date {
+      color: #a1a1aa;
+    }
+
+    body.dark-mode .input-field,
+    body.dark-mode select,
+    body.dark-mode textarea {
+      background: #1a1a1e;
+      border: 1px solid #2a2a2e;
+      color: white;
+    }
+
+    /* Dashboard Layout */
+    .seeker-dashboard {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* LEFT SIDEBAR */
+    .sidebar {
+      width: 280px;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      transition: all 0.3s;
+    }
+
+    .sidebar-header {
+      padding: 28px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sidebar-logo i {
+      font-size: 28px;
+      color: #f97316;
+    }
+
+    .sidebar-logo span {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    body.light-mode .sidebar-logo span {
+      background: linear-gradient(135deg, #fff, #f97316);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    body.dark-mode .sidebar-logo span {
+      background: linear-gradient(135deg, #fff, #f97316);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .sidebar-sub {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 24px 16px;
+    }
+
+    .nav-section {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #64748b;
+      margin-bottom: 16px;
+      padding-left: 12px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      text-decoration: none;
+      border-radius: 12px;
+      margin-bottom: 4px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .nav-item i {
+      width: 20px;
+      font-size: 16px;
+    }
+
+    /* Sidebar Profile */
+    .sidebar-profile {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .profile-avatar-small {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #f97316, #f43f5e);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .profile-info-small .name {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .profile-info-small .rank {
+      font-size: 10px;
+    }
+
+    /* MAIN CONTENT */
+    .main-content {
+      flex: 1;
+      margin-left: 280px;
+      padding: 32px 40px;
+    }
+
+    /* Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .datetime {
+      text-align: right;
+    }
+
+    .date {
+      font-size: 13px;
+    }
+
+    .time {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .greeting h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .greeting p {
+      font-size: 14px;
+    }
+
+    /* Profile Summary Card */
+    .profile-summary {
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .profile-avatar-large {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #f97316, #f43f5e);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: 700;
+      overflow: hidden;
+    }
+
+    .profile-avatar-large img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-info h3 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .profile-badge {
+      display: inline-block;
+      background: rgba(249,115,22,0.15);
+      color: #f97316;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    /* Section Styles */
+    .section {
+      margin-bottom: 40px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .view-all {
+      color: #f97316;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    /* Booking Item */
+    .booking-item {
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: 0.2s;
+      margin-bottom: 12px;
+    }
+
+    .booking-item:hover {
+      border-color: #f97316;
+    }
+
+    .booking-info h4 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .booking-meta {
+      font-size: 12px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .booking-status {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-confirmed {
+      background: #dbeafe;
+      color: #2563eb;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .status-completed {
+      background: #d1fae5;
+      color: #059669;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 48px;
+      border-radius: 20px;
+    }
+
+    .empty-state i {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .browse-btn {
+      background: linear-gradient(135deg, #f97316, #f43f5e);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 40px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+
+    /* Export Cards */
+    .export-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .export-card {
+      border-radius: 20px;
+      padding: 20px;
+    }
+
+    .export-card h4 {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .export-card p {
+      font-size: 13px;
+      margin-bottom: 16px;
+      opacity: 0.7;
+    }
+
+    .export-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .export-btn {
+      background: rgba(249,115,22,0.15);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .export-btn:hover {
+      background: #f97316;
+      color: white;
+    }
+
+    /* Settings Card */
+    .settings-card {
+      border-radius: 24px;
+      padding: 24px;
+    }
+
+    .avatar-upload {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .avatar-preview {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #f97316, #f43f5e);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: 700;
+      overflow: hidden;
+    }
+
+    .avatar-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .upload-btn {
+      background: rgba(249,115,22,0.15);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .input-field, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .input-field:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #f97316;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .save-btn {
+      background: linear-gradient(135deg, #f97316, #f43f5e);
+      border: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .save-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Content Panels */
+    .content-panel {
+      display: none;
+    }
+
+    .content-panel.active {
+      display: block;
+    }
+
+    /* Theme Toggle Button */
+    .theme-toggle {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f97316, #f43f5e);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: 0.2s;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.1);
+    }
+
+    .theme-toggle i {
+      font-size: 24px;
+      color: white;
+    }
+
+    .theme-label {
+      position: fixed;
+      bottom: 90px;
+      right: 35px;
+      font-size: 11px;
+      background: rgba(0,0,0,0.7);
+      padding: 4px 10px;
+      border-radius: 20px;
+      color: white;
+      z-index: 1000;
+      pointer-events: none;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: linear-gradient(135deg, #f97316, #f43f5e);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 1000;
+      transition: 0.3s;
+      opacity: 0;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 1000px) {
+      .main-content {
+        margin-left: 0;
+        padding: 20px;
+      }
+      .sidebar {
+        transform: translateX(-100%);
+        z-index: 999;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .menu-toggle {
+        display: block;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1001;
+        background: #f97316;
+        border: none;
+        padding: 10px;
+        border-radius: 10px;
+        color: white;
+        cursor: pointer;
+      }
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (min-width: 1001px) {
+      .menu-toggle {
+        display: none;
+      }
+    }
+  </style>
 </head>
-<body>
-<div class="d-shell">
+<body class="light-mode">
 
-  <!-- -- LEFT SIDEBAR ------------------------------------ -->
-  <aside class="d-sidebar">
-    <div class="d-sidebar-logo">
-      <img src="/assets/logo_2.svg" class="sidebar-logo" alt="CampusConnect">
-      <span class="logo-name">CampusConnect</span>
+<!-- Mobile Menu Toggle -->
+<button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+
+<!-- Theme Toggle -->
+<button class="theme-toggle" id="themeToggle">
+  <i class="fas fa-sun"></i>
+</button>
+<div class="theme-label" id="themeLabel">Light mode</div>
+
+<div class="seeker-dashboard">
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <i class="fas fa-graduation-cap"></i>
+        <span>CampusConnect</span>
+      </div>
+      <div class="sidebar-sub">Service Seeker</div>
     </div>
-
-    <div class="d-sidebar-section-label">Menu</div>
-
-    <nav class="d-sidebar-nav">
-      <a class="dash-nav-item" href="/pages/browse.html">
-        <span class="dash-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
-        <span>Browse</span>
-      </a>
-      <button class="dash-nav-item active" data-tab="overview">
-        <span class="dash-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></span>
+    <div class="sidebar-nav">
+      <div class="nav-section">Menu</div>
+      <div class="nav-item active" data-page="overview">
+        <i class="fas fa-home"></i>
         <span>Overview</span>
-      </button>
-      <button class="dash-nav-item" data-tab="listings">
-        <span class="dash-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>
-        <span>My listings</span>
-      </button>
-      <button class="dash-nav-item" data-tab="orders">
-        <span class="dash-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
-        <span>Orders</span>
-      </button>
-      <button class="dash-nav-item" data-tab="bookings">
-        <span class="dash-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
-        <span>Bookings</span>
-      </button>
-      <button class="dash-nav-item" data-tab="reviews">
-        <span class="dash-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+      </div>
+      <div class="nav-item" data-page="browse">
+        <i class="fas fa-search"></i>
+        <span>Browse</span>
+      </div>
+      <div class="nav-item" data-page="bookings">
+        <i class="fas fa-calendar"></i>
+        <span>My bookings</span>
+      </div>
+      <div class="nav-item" data-page="reviews">
+        <i class="fas fa-star"></i>
         <span>Reviews</span>
-      </button>
-      <div class="d-sidebar-divider"></div>
-      <a class="dash-nav-item" href="/pages/admin.html" id="adminNavLink" style="display:none;color:#ef4444">
-        <span class="dash-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
-        <span>Admin Panel</span>
-        <span style="margin-left:auto;font-size:.65rem;font-weight:700;background:#ef4444;color:#fff;padding:1px 6px;border-radius:99px">ADMIN</span>
-      </a>
-      <button class="dash-nav-item" data-tab="reports">
-        <span class="dash-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>
+      </div>
+      <div class="nav-divider" style="height:1px; background:rgba(255,255,255,0.1); margin:16px 0;"></div>
+      <div class="nav-item" data-page="reports">
+        <i class="fas fa-chart-line"></i>
         <span>Reports</span>
-      </button>
-      <button class="dash-nav-item" data-tab="settings">
-        <span class="dash-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+      </div>
+      <div class="nav-item" data-page="settings">
+        <i class="fas fa-cog"></i>
         <span>Settings</span>
-      </button>
-      <button class="dash-nav-item" id="logoutBtn">
-        <span class="dash-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
+      </div>
+      <div class="nav-divider" style="height:1px; background:rgba(255,255,255,0.1); margin:16px 0;"></div>
+      <div class="nav-item" data-page="logout">
+        <i class="fas fa-sign-out-alt"></i>
         <span>Log out</span>
-      </button>
-    </nav>
-
-    <div class="d-sidebar-footer" id="sidebarProfile">
-      <div id="sidebarAvatarWrap"></div>
-      <div class="sf-info">
-        <div class="sf-name" id="sidebarName">�</div>
-        <div class="sf-rank" id="sidebarRank"></div>
+      </div>
+    </div>
+    <div class="sidebar-profile">
+      <div class="profile-avatar-small" id="sidebarAvatar">C</div>
+      <div class="profile-info-small">
+        <div class="name" id="sidebarName">Celeste</div>
+        <div class="rank" id="sidebarRank">Side Hustle Rookie</div>
       </div>
     </div>
   </aside>
 
-  <!-- -- MAIN CONTENT ------------------------------------- -->
-  <main class="d-main">
-    <!-- Header -->
-    <div class="d-main-header">
-      <div class="header-title-wrap">
-        <div class="header-greeting" id="dashGreeting">GOOD MORNING</div>
-        <h1 id="dashWelcomeName">Welcome back!</h1>
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <!-- Overview Panel -->
+    <div id="overview-panel" class="content-panel active">
+      <div class="top-bar">
+        <div class="greeting">
+          <h1 id="greetingText">Good afternoon, Celeste! 👋</h1>
+          <p id="currentDate"></p>
+        </div>
+        <div class="datetime">
+          <div class="time" id="currentTime">--:-- --</div>
+        </div>
       </div>
-      <div class="d-header-actions">
-        <a href="/pages/listing-form.html" class="d-btn primary">
-          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          New listing
-        </a>
+
+      <!-- Profile Summary -->
+      <div class="profile-summary">
+        <div class="profile-avatar-large" id="profileAvatar">C</div>
+        <div class="profile-info">
+          <h3 id="profileName">Celeste</h3>
+          <span class="profile-badge" id="profileBadge">Side Hustle Rookie</span>
+          <div style="margin-top: 8px; font-size: 13px; opacity: 0.7;" id="profileFaculty">Business and Economics · UJ</div>
+        </div>
+      </div>
+
+      <!-- My Bookings Section -->
+      <div class="section">
+        <div class="section-header">
+          <h2>📅 My bookings</h2>
+          <button class="view-all" onclick="switchToPanel('bookings')">View all →</button>
+        </div>
+        <div id="bookingsListContainer">
+          <!-- Bookings will appear here -->
+        </div>
+      </div>
+
+      <!-- Reviews Section -->
+      <div class="section">
+        <div class="section-header">
+          <h2>⭐ Reviews you wrote</h2>
+          <button class="view-all" onclick="switchToPanel('reviews')">View all →</button>
+        </div>
+        <div id="reviewsListContainer">
+          <!-- Reviews will appear here -->
+        </div>
       </div>
     </div>
 
-    <!-- Scrollable tab area -->
-    <div class="d-tab-body">
+    <!-- Browse Panel -->
+    <div id="browse-panel" class="content-panel">
+      <div class="top-bar">
+        <div class="greeting">
+          <h1>🔍 Browse Services</h1>
+          <p>Find the perfect service for your needs</p>
+        </div>
+      </div>
+      <div class="empty-state" style="margin-top: 20px;">
+        <i class="fas fa-search"></i>
+        <p>Browse feature coming soon!</p>
+        <p style="font-size: 13px; margin-top: 8px;">Discover tutors, designers, and more on CampusConnect.</p>
+        <button class="browse-btn" onclick="showToast('🔍 Browse services - Coming soon!')">Start Exploring →</button>
+      </div>
+    </div>
 
-      <!-- -- OVERVIEW ------------------------------- -->
-      <section id="tab-overview" class="dashboard-tab active-tab">
+    <!-- My Bookings Panel -->
+    <div id="bookings-panel" class="content-panel">
+      <div class="top-bar">
+        <div class="greeting">
+          <h1>📅 My Bookings</h1>
+          <p>Services you have booked</p>
+        </div>
+      </div>
+      <div class="export-cards">
+        <div class="export-card">
+          <h4>📅 My Bookings</h4>
+          <p>Export your bookings data</p>
+          <div class="export-buttons">
+            <button class="export-btn" onclick="exportData('bookings', 'csv')">📄 CSV</button>
+            <button class="export-btn" onclick="exportData('bookings', 'pdf')">📑 PDF</button>
+          </div>
+        </div>
+      </div>
+      <div id="bookingsFullContainer">
+        <!-- Full bookings list -->
+      </div>
+    </div>
 
-        <!-- Profile card + 4 stat cards -->
-        <div class="d-overview-top">
-          <div class="d-profile-card">
-            <div class="pc-avatar" id="profileAvatarWrap"></div>
-            <div class="pc-name" id="profileName">�</div>
-            <span class="pc-rank" id="profileRank">�</span>
-            <div class="pc-meta" id="profileMeta"></div>
-            <div class="pc-stats">
-              <div class="pc-stat">
-                <span class="pc-stat-val" id="pcListings">0</span>
-                <span class="pc-stat-lbl">Listings</span>
-              </div>
-              <div class="pc-stat">
-                <span class="pc-stat-val" id="pcRating">�</span>
-                <span class="pc-stat-lbl">Rating</span>
-              </div>
-              <div class="pc-stat">
-                <span class="pc-stat-val" id="pcXp">0</span>
-                <span class="pc-stat-lbl">XP</span>
-              </div>
+    <!-- Reviews Panel -->
+    <div id="reviews-panel" class="content-panel">
+      <div class="top-bar">
+        <div class="greeting">
+          <h1>⭐ Reviews I Wrote</h1>
+          <p>Reviews you've left for sellers</p>
+        </div>
+      </div>
+      <div class="export-cards">
+        <div class="export-card">
+          <h4>⭐ My Reviews</h4>
+          <p>Export your reviews data</p>
+          <div class="export-buttons">
+            <button class="export-btn" onclick="exportData('reviewsWritten', 'csv')">📄 CSV</button>
+            <button class="export-btn" onclick="exportData('reviewsWritten', 'pdf')">📑 PDF</button>
+          </div>
+        </div>
+      </div>
+      <div id="reviewsFullContainer">
+        <!-- Full reviews list -->
+      </div>
+    </div>
+
+    <!-- Reports Panel -->
+    <div id="reports-panel" class="content-panel">
+      <div class="top-bar">
+        <div class="greeting">
+          <h1>📊 Reports & Exports</h1>
+          <p>Download your data as CSV or PDF</p>
+        </div>
+      </div>
+      <div class="export-cards">
+        <div class="export-card">
+          <h4>📅 My Bookings</h4>
+          <p>Services you have booked</p>
+          <div class="export-buttons">
+            <button class="export-btn" onclick="exportData('bookings', 'csv')">📄 CSV</button>
+            <button class="export-btn" onclick="exportData('bookings', 'pdf')">📑 PDF</button>
+          </div>
+        </div>
+        <div class="export-card">
+          <h4>⭐ Reviews I Wrote</h4>
+          <p>Reviews you've left for sellers</p>
+          <div class="export-buttons">
+            <button class="export-btn" onclick="exportData('reviewsWritten', 'csv')">📄 CSV</button>
+            <button class="export-btn" onclick="exportData('reviewsWritten', 'pdf')">📑 PDF</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div id="settings-panel" class="content-panel">
+      <div class="top-bar">
+        <div class="greeting">
+          <h1>⚙️ Settings</h1>
+          <p>Manage your account preferences</p>
+        </div>
+      </div>
+      <div class="settings-card">
+        <form id="settingsForm">
+          <div class="avatar-upload">
+            <div class="avatar-preview" id="avatarPreview">
+              <span id="avatarText">C</span>
+              <img id="avatarImg" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div>
+              <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/jpg" style="display: none;">
+              <button type="button" class="upload-btn" id="uploadAvatarBtn">📸 Upload Picture</button>
             </div>
           </div>
 
-          <div class="d-stats-grid" id="statsGrid">
-            <div class="loading-wrap" style="grid-column:span 2"><div class="spinner"></div></div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" id="settingsName" class="input-field" value="Celeste">
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="settingsEmail" class="input-field" value="celeste@campus.ac.za">
+            </div>
           </div>
-        </div>
 
-        <!-- 3 Summary cards -->
-        <div class="d-summary-row" id="summaryRow">
-          <!-- populated by JS -->
-        </div>
-
-        <!-- Recent orders -->
-        <div id="recentActivity"></div>
-
-      </section>
-
-      <!-- -- MY LISTINGS ---------------------------- -->
-      <section id="tab-listings" class="dashboard-tab">
-        <div class="section-header mb-3">
-          <div class="d-tab-title">My listings</div>
-          <a class="d-btn primary" href="/pages/listing-form.html">+ New listing</a>
-        </div>
-        <div id="myListings" class="listings-grid"></div>
-      </section>
-
-      <!-- -- ORDERS --------------------------------- -->
-      <section id="tab-orders" class="dashboard-tab">
-        <div class="d-tab-title">Orders</div>
-        <div class="tab-pills mb-3" id="orderTabs">
-          <button class="tab-pill active" data-status="all">All</button>
-          <button class="tab-pill" data-status="pending">Pending</button>
-          <button class="tab-pill" data-status="accepted">Accepted</button>
-          <button class="tab-pill" data-status="completed">Completed</button>
-        </div>
-        <div id="ordersList"></div>
-      </section>
-
-      <!-- -- BOOKINGS -------------------------------- -->
-      <section id="tab-bookings" class="dashboard-tab">
-        <div class="d-tab-title">My bookings</div>
-        <div class="tab-pills mb-3" id="bookingTabs">
-          <button class="tab-pill active" data-bstatus="all">All</button>
-          <button class="tab-pill" data-bstatus="pending">Pending</button>
-          <button class="tab-pill" data-bstatus="accepted">Accepted</button>
-          <button class="tab-pill" data-bstatus="completed">Completed</button>
-        </div>
-        <div id="bookingsList"></div>
-      </section>
-
-      <!-- -- REVIEWS --------------------------------- -->
-      <section id="tab-reviews" class="dashboard-tab">
-        <div class="tab-pills mb-3" id="reviewViewTabs">
-          <button class="tab-pill active" data-rview="received">Reviews received</button>
-          <button class="tab-pill" data-rview="written">Reviews I wrote</button>
-        </div>
-        <div id="reviewsList"></div>
-        <div id="reviewsWrittenList" style="display:none"></div>
-      </section>
-
-      <!-- -- REPORTS --------------------------------- -->
-      <section id="tab-reports" class="dashboard-tab">
-        <div class="d-tab-title" style="margin-bottom:6px">Reports &amp; Exports</div>
-        <p style="font-size:.85rem;color:#6b7280;margin-bottom:22px">Download your data as a PDF or CSV file.</p>
-        <div id="reportsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px"></div>
-      </section>
-
-      <!-- -- SETTINGS -------------------------------- -->
-      <section id="tab-settings" class="dashboard-tab">
-        <div class="d-tab-title">Account settings</div>
-        <div class="card card-pad" style="max-width:560px">
-          <form id="settingsForm" class="form-grid">
+          <div class="form-row">
             <div class="form-group">
-              <label class="form-label">Avatar</label>
-              <div class="flex items-center gap-2" style="align-items:center">
-                <div id="avatarPreview"></div>
-                <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin-left:8px">
-                  Change photo
-                  <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none">
-                </label>
-              </div>
-            </div>
-            <div class="form-grid-2">
-              <div class="form-group">
-                <label class="form-label" for="settingsName">Display name</label>
-                <input type="text" id="settingsName" name="name">
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="settingsUni">University / Faculty</label>
-                <input type="text" id="settingsUni" name="university">
-              </div>
+              <label>Faculty</label>
+              <input type="text" id="settingsFaculty" class="input-field" value="Business and Economics">
             </div>
             <div class="form-group">
-              <label class="form-label" for="settingsYear">Year of study</label>
-              <select id="settingsYear" name="year_of_study">
-                <option value="">Select year</option>
-                <option value="1">1st year</option>
-                <option value="2">2nd year</option>
-                <option value="3">3rd year</option>
-                <option value="4">4th year</option>
-                <option value="5">5th year</option>
-                <option value="6">Postgrad</option>
+              <label>Year of Study</label>
+              <select id="settingsYear" class="input-field">
+                <option value="1">1st Year</option>
+                <option value="2">2nd Year</option>
+                <option value="3" selected>3rd Year</option>
+                <option value="4">4th Year</option>
+                <option value="5">Postgraduate</option>
               </select>
             </div>
+          </div>
+
+          <div class="form-group">
+            <label>University</label>
+            <input type="text" id="settingsUniversity" class="input-field" value="University of Johannesburg">
+          </div>
+
+          <div class="form-group">
+            <label>Bio</label>
+            <textarea id="settingsBio" class="input-field" rows="3" placeholder="Tell sellers about yourself...">Looking for great services to help me succeed on campus!</textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Interests (comma separated)</label>
+            <input type="text" id="settingsInterests" class="input-field" value="Tutoring, Design, Photography, Events">
+          </div>
+
+          <div class="form-divider" style="height: 1px; background: rgba(0,0,0,0.1); margin: 20px 0;"></div>
+
+          <h3 style="margin-bottom: 16px; font-size: 18px;">Change Password</h3>
+          <div class="form-row">
             <div class="form-group">
-              <label class="form-label" for="settingsBio">Bio</label>
-              <textarea id="settingsBio" name="bio" rows="3" placeholder="Tell buyers about yourself..."></textarea>
+              <label>Current Password</label>
+              <input type="password" id="currentPassword" class="input-field" placeholder="Enter current password">
             </div>
             <div class="form-group">
-              <label class="form-label" for="settingsSkills">Skills (comma-separated)</label>
-              <input type="text" id="settingsSkills" name="skills" placeholder="e.g. Maths, Python, Photography">
+              <label>New Password</label>
+              <input type="password" id="newPassword" class="input-field" placeholder="Enter new password">
             </div>
-            <button type="submit" class="btn btn-primary" id="saveSettingsBtn" style="width:fit-content">Save changes</button>
-          </form>
-        </div>
-      </section>
+          </div>
+          <div class="form-group">
+            <label>Confirm New Password</label>
+            <input type="password" id="confirmPassword" class="input-field" placeholder="Confirm new password">
+          </div>
 
-    </div><!-- /d-tab-body -->
-  </main>
-
-    <!-- -- RIGHT PANEL: Messages --------------------------------- -->
-  <aside class="d-right">
-    <div class="d-right-header">
-      <h3>Messages</h3>
-      <a href="/pages/inbox.html" class="d-right-refresh" title="Open full inbox" style="text-decoration:none">
-        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-      </a>
-    </div>
-    <!-- Conversation list -->
-    <div id="dmConvList" class="dm-conv-list">
-      <div class="loading-wrap"><div class="spinner"></div></div>
-    </div>
-    <!-- Thread view (shown when a conversation is open) -->
-    <div id="dmThread" class="dm-thread" style="display:none"></div>
-  </aside>
-
-</div><!-- /d-shell -->
-
-<!-- ── Review Modal ──────────────────────────────────────────────────── -->
-<div id="reviewModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;align-items:center;justify-content:center;padding:1rem">
-  <div style="background:#fff;border-radius:20px;padding:28px 28px 24px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,.2);position:relative">
-    <button id="reviewModalClose" style="position:absolute;top:14px;right:14px;background:none;border:none;cursor:pointer;color:var(--text-3);font-size:1.2rem;line-height:1;padding:4px">&times;</button>
-    <h3 style="font-size:1.05rem;font-weight:800;color:var(--text);margin-bottom:4px">Leave a review</h3>
-    <p id="reviewModalSub" style="font-size:.8rem;color:var(--text-3);margin-bottom:20px"></p>
-    <div style="margin-bottom:16px">
-      <div style="font-size:.78rem;font-weight:600;color:var(--text-2);margin-bottom:8px">Your rating</div>
-      <div id="starPicker" style="display:flex;gap:6px;font-size:1.8rem;cursor:pointer">
-        <span data-star="1">&#9733;</span>
-        <span data-star="2">&#9733;</span>
-        <span data-star="3">&#9733;</span>
-        <span data-star="4">&#9733;</span>
-        <span data-star="5">&#9733;</span>
+          <button type="submit" class="save-btn" style="margin-top: 20px;">💾 Save All Changes</button>
+        </form>
       </div>
     </div>
-    <div class="form-group" style="margin-bottom:18px">
-      <label class="form-label">Review</label>
-      <textarea id="reviewContent" rows="3" placeholder="Share your experience with this seller..." style="resize:vertical"></textarea>
-    </div>
-    <button id="reviewSubmitBtn" class="btn btn-primary w-full" style="width:100%;padding:11px;font-size:.88rem">Submit review</button>
-  </div>
+  </main>
 </div>
 
-<div id="toast-container"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="/js/config.js"></script>
-<script>window.sbClient = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON);</script>
-<script src="/js/api.js"></script>
-<script src="/js/auth.js"></script>
-<script src="/js/common.js"></script>
-<script src="/js/dashboard.js"></script>
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<script>
+  // ========== STORAGE KEYS ==========
+  const STORAGE_KEYS = {
+    PROFILE: 'campus_seeker_profile',
+    BOOKINGS: 'campus_seeker_bookings',
+    REVIEWS_WRITTEN: 'campus_seeker_reviews',
+    THEME: 'campus_theme'
+  };
+
+  // ========== DEFAULT DATA ==========
+  let userData = {
+  name: '',
+  email: '',
+  faculty: '',
+  university: '',
+  year: '',
+  bio: '',
+  interests: '',
+  avatar: null,
+  rank: 'Campus Member',
+  bookingsCount: 0,
+  reviewsCount: 0
+};
+
+  let bookingsData = [
+    // Sample booking - remove for empty state
+  ];
+
+  let reviewsWrittenData = [
+    // Sample review - remove for empty state
+  ];
+
+  // ========== TOAST FUNCTION ==========
+  function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.background = isError ? 'linear-gradient(135deg, #ef4444, #dc2626)' : 'linear-gradient(135deg, #f97316, #f43f5e)';
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 3000);
+  }
+
+  // ========== DATE & TIME ==========
+ function updateDateTime() {
+  const now = new Date();
+
+  const options = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  };
+
+  document.getElementById('currentDate').innerHTML =
+    now.toLocaleDateString('en-US', options).toUpperCase();
+
+  // REAL HOUR FOR GREETING
+  const realHours = now.getHours();
+
+  // 12-HOUR FORMAT FOR DISPLAY
+  let displayHours = realHours % 12 || 12;
+
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+
+  const ampm = realHours >= 12 ? 'PM' : 'AM';
+
+  document.getElementById('currentTime').innerHTML =
+    `${displayHours}:${minutes} ${ampm}`;
+
+  let greeting = 'Good evening';
+
+  if (realHours < 12) {
+    greeting = 'Good morning';
+  } else if (realHours < 18) {
+    greeting = 'Good afternoon';
+  }
+
+  // FALLBACK NAME
+  const displayName = userData.name || 'Student';
+
+  document.getElementById('greetingText').innerHTML =
+    `${greeting}, ${displayName}! 👋`;
+}
+  setInterval(updateDateTime, 1000);
+  updateDateTime();
+
+  // ========== LOAD/SAVE DATA ==========
+  function loadUserData() {
+    const saved = localStorage.getItem(STORAGE_KEYS.PROFILE);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      userData = { ...userData, ...parsed };
+    }
+    
+    const savedBookings = localStorage.getItem(STORAGE_KEYS.BOOKINGS);
+    if (savedBookings) bookingsData = JSON.parse(savedBookings);
+    
+    const savedReviews = localStorage.getItem(STORAGE_KEYS.REVIEWS_WRITTEN);
+    if (savedReviews) reviewsWrittenData = JSON.parse(savedReviews);
+    
+    userData.bookingsCount = bookingsData.length;
+    userData.reviewsCount = reviewsWrittenData.length;
+    
+    updateUI();
+  }
+
+  function saveUserData() {
+    localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(userData));
+    localStorage.setItem(STORAGE_KEYS.BOOKINGS, JSON.stringify(bookingsData));
+    localStorage.setItem(STORAGE_KEYS.REVIEWS_WRITTEN, JSON.stringify(reviewsWrittenData));
+    updateUI();
+    showToast('✅ Settings saved successfully!');
+  }
+
+  function updateUI() {
+    // Update sidebar
+    document.getElementById('sidebarName').innerHTML = userData.name;
+    document.getElementById('sidebarRank').innerHTML = userData.rank;
+    document.getElementById('profileName').innerHTML = userData.name;
+    document.getElementById('profileBadge').innerHTML = userData.rank;
+    document.getElementById('profileFaculty').innerHTML = `${userData.faculty} · ${userData.university}`;
+    
+    // Update settings form values
+    document.getElementById('settingsName').value = userData.name;
+    document.getElementById('settingsEmail').value = userData.email;
+    document.getElementById('settingsFaculty').value = userData.faculty;
+    document.getElementById('settingsUniversity').value = userData.university;
+    document.getElementById('settingsYear').value = userData.year;
+    document.getElementById('settingsBio').value = userData.bio;
+    document.getElementById('settingsInterests').value = userData.interests;
+    
+    // Update avatar
+    if (userData.avatar) {
+      document.getElementById('avatarImg').src = userData.avatar;
+      document.getElementById('avatarImg').style.display = 'block';
+      document.getElementById('avatarText').style.display = 'none';
+      document.getElementById('sidebarAvatar').innerHTML = '<img src="' + userData.avatar + '" style="width:100%;height:100%;object-fit:cover;border-radius:12px">';
+      document.getElementById('profileAvatar').innerHTML = '<img src="' + userData.avatar + '" style="width:100%;height:100%;object-fit:cover;border-radius:24px">';
+    } else {
+      document.getElementById('avatarImg').style.display = 'none';
+      document.getElementById('avatarText').style.display = 'flex';
+      document.getElementById('sidebarAvatar').innerHTML = userData.name.charAt(0);
+      document.getElementById('profileAvatar').innerHTML = userData.name.charAt(0);
+    }
+    
+    // Update bookings display in overview
+    const overviewContainer = document.getElementById('bookingsListContainer');
+    if (bookingsData.length === 0) {
+      overviewContainer.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-calendar-alt"></i>
+          <p>No bookings yet. Start exploring services!</p>
+          <button class="browse-btn" onclick="switchToPanel('browse')">Browse services →</button>
+        </div>
+      `;
+    } else {
+      overviewContainer.innerHTML = bookingsData.slice(0, 3).map(booking => `
+        <div class="booking-item">
+          <div class="booking-info">
+            <h4>${booking.service}</h4>
+            <div class="booking-meta">
+              <span><i class="fas fa-user"></i> ${booking.provider}</span>
+              <span><i class="fas fa-calendar"></i> ${booking.date}</span>
+              <span><i class="fas fa-clock"></i> ${booking.time}</span>
+            </div>
+          </div>
+          <span class="booking-status status-${booking.status}">${booking.status}</span>
+        </div>
+      `).join('');
+    }
+    
+    // Update reviews display in overview
+    const reviewsContainer = document.getElementById('reviewsListContainer');
+    if (reviewsWrittenData.length === 0) {
+      reviewsContainer.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-pen"></i>
+          <p>No reviews yet. After booking a service, leave a review!</p>
+        </div>
+      `;
+    } else {
+      reviewsContainer.innerHTML = reviewsWrittenData.slice(0, 3).map(review => `
+        <div class="booking-item">
+          <div class="booking-info">
+            <h4>${review.service}</h4>
+            <div class="booking-meta">
+              <span><i class="fas fa-star" style="color: #f59e0b;"></i> ${review.rating}/5</span>
+              <span><i class="fas fa-user"></i> ${review.provider}</span>
+            </div>
+            <p style="font-size: 12px; margin-top: 8px;">"${review.comment.substring(0, 100)}${review.comment.length > 100 ? '...' : ''}"</p>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    // Update full bookings panel
+    const fullBookingsContainer = document.getElementById('bookingsFullContainer');
+    if (bookingsData.length === 0) {
+      fullBookingsContainer.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-calendar-alt"></i>
+          <p>No bookings yet.</p>
+          <button class="browse-btn" onclick="switchToPanel('browse')">Browse services →</button>
+        </div>
+      `;
+    } else {
+      fullBookingsContainer.innerHTML = bookingsData.map(booking => `
+        <div class="booking-item">
+          <div class="booking-info">
+            <h4>${booking.service}</h4>
+            <div class="booking-meta">
+              <span><i class="fas fa-user"></i> ${booking.provider}</span>
+              <span><i class="fas fa-calendar"></i> ${booking.date}</span>
+              <span><i class="fas fa-clock"></i> ${booking.time}</span>
+            </div>
+          </div>
+          <span class="booking-status status-${booking.status}">${booking.status}</span>
+        </div>
+      `).join('');
+    }
+    
+    // Update full reviews panel
+    const fullReviewsContainer = document.getElementById('reviewsFullContainer');
+    if (reviewsWrittenData.length === 0) {
+      fullReviewsContainer.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-star"></i>
+          <p>No reviews yet. After completing a booking, leave a review!</p>
+        </div>
+      `;
+    } else {
+      fullReviewsContainer.innerHTML = reviewsWrittenData.map(review => `
+        <div class="booking-item">
+          <div class="booking-info">
+            <h4>${review.service}</h4>
+            <div class="booking-meta">
+              <span><i class="fas fa-star" style="color: #f59e0b;"></i> ${review.rating}/5</span>
+              <span><i class="fas fa-user"></i> ${review.provider}</span>
+              <span><i class="fas fa-calendar"></i> ${review.date}</span>
+            </div>
+            <p style="font-size: 13px; margin-top: 8px;">"${review.comment}"</p>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+
+  // ========== EXPORT FUNCTIONS ==========
+  function exportData(type, format) {
+    let data = [];
+    let filename = '';
+    
+    switch(type) {
+      case 'bookings':
+        data = bookingsData;
+        filename = 'my_bookings';
+        break;
+      case 'reviewsWritten':
+        data = reviewsWrittenData;
+        filename = 'my_reviews';
+        break;
+    }
+    
+    if (data.length === 0) {
+      showToast('No data to export', true);
+      return;
+    }
+    
+    if (format === 'csv') {
+      const headers = Object.keys(data[0] || {});
+      const csvRows = [headers.join(',')];
+      for (const row of data) {
+        const values = headers.map(header => JSON.stringify(row[header] || ''));
+        csvRows.push(values.join(','));
+      }
+      const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${filename}_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast(`📄 ${filename} exported as CSV!`);
+    } else {
+      showToast(`📑 PDF export for ${filename} - Coming soon!`);
+    }
+  }
+
+  // ========== AVATAR UPLOAD ==========
+  document.getElementById('uploadAvatarBtn').addEventListener('click', () => {
+    document.getElementById('avatarInput').click();
+  });
+  
+  document.getElementById('avatarInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        userData.avatar = ev.target.result;
+        updateUI();
+        saveUserData();
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // ========== SETTINGS FORM ==========
+  document.getElementById('settingsForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    userData.name = document.getElementById('settingsName').value;
+    userData.email = document.getElementById('settingsEmail').value;
+    userData.faculty = document.getElementById('settingsFaculty').value;
+    userData.university = document.getElementById('settingsUniversity').value;
+    userData.year = document.getElementById('settingsYear').value;
+    userData.bio = document.getElementById('settingsBio').value;
+    userData.interests = document.getElementById('settingsInterests').value;
+    
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    if (newPassword) {
+      if (newPassword.length < 6) {
+        showToast('Password must be at least 6 characters', true);
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        showToast('Passwords do not match', true);
+        return;
+      }
+      showToast('Password updated successfully!');
+      document.getElementById('currentPassword').value = '';
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmPassword').value = '';
+    }
+    
+    saveUserData();
+  });
+
+  // ========== THEME TOGGLE ==========
+  function setTheme(theme) {
+    if (theme === 'dark') {
+      document.body.classList.remove('light-mode');
+      document.body.classList.add('dark-mode');
+      document.getElementById('themeToggle').innerHTML = '<i class="fas fa-moon"></i>';
+      document.getElementById('themeLabel').innerHTML = 'Dark mode';
+      localStorage.setItem(STORAGE_KEYS.THEME, 'dark');
+    } else {
+      document.body.classList.remove('dark-mode');
+      document.body.classList.add('light-mode');
+      document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+      document.getElementById('themeLabel').innerHTML = 'Light mode';
+      localStorage.setItem(STORAGE_KEYS.THEME, 'light');
+    }
+  }
+
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const isDark = document.body.classList.contains('dark-mode');
+    setTheme(isDark ? 'light' : 'dark');
+  });
+
+  const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME);
+  if (savedTheme) setTheme(savedTheme);
+  else setTheme('light');
+
+  // ========== PANEL NAVIGATION ==========
+  function switchToPanel(panelId) {
+    document.querySelectorAll('.content-panel').forEach(panel => {
+      panel.classList.remove('active');
+    });
+    document.getElementById(`${panelId}-panel`).classList.add('active');
+    
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.classList.remove('active');
+      if (item.getAttribute('data-page') === panelId) {
+        item.classList.add('active');
+      }
+    });
+    
+    if (window.innerWidth <= 1000) {
+      document.getElementById('sidebar').classList.remove('open');
+    }
+  }
+
+  document.querySelectorAll('.nav-item').forEach(item => {
+
+  item.addEventListener('click', () => {
+
+    const page = item.getAttribute('data-page');
+
+    if (page === 'logout') {
+
+      // CLEAR LOGIN SESSION
+      localStorage.removeItem('loggedInUser');
+
+      showToast('🚪 Logging out...');
+
+      setTimeout(() => {
+
+        // REDIRECT
+        window.location.href = '../index.html';
+
+      }, 1000);
+
+    } else {
+
+      switchToPanel(page);
+    }
+  });
+});
+
+  // Make switchToPanel available globally for inline buttons
+  window.switchToPanel = switchToPanel;
+  window.exportData = exportData;
+  window.showToast = showToast;
+
+  // ========== MOBILE MENU ==========
+  document.getElementById('menuToggle')?.addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+  });
+
+  // ========== INITIALIZE ==========
+  loadUserData();
+</script>
 </body>
 </html>
