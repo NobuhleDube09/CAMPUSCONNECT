@@ -425,3 +425,35 @@
         font-size: 20px;
       }
     }
+    @media (max-width: 520px) {
+      .lp-row { flex-direction: column; gap: 14px; }
+      .lp-right { padding: 32px 20px 40px; }
+      .lp-footer { gap: 20px; }
+    }
+
+    /* Make page take full height */
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main content grows */
+main {
+    flex: 1;
+}
+
+/* Footer styling */
+.footer {
+    background-color: #1e293b;
+    color: white;
+    text-align: center;
+    padding: 15px 10px;
+    margin-top: auto;
+}
+
+.footer-content p {
+    margin: 5px 0;
+    font-size: 14px;
+}
