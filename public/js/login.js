@@ -24,11 +24,20 @@ document.addEventListener('DOMContentLoaded', () => {
         // Account exists but OTP not completed — sign back out and send them to verify
         await Auth.signOut();
         const email = encodeURIComponent(form.email.value.trim());
-        window.location.href = `/pages/get-started.html?step=verify&email=${email}`;
+        window.location.href = `pages/get-started.html?step=verify&email=${email}`;
         return;
       }
-      // Admins go straight to the admin panel
-      window.location.href = profile?.is_admin ? '/pages/admin.html' : '/pages/dashboard.html';
+      // FIXED: Redirect based on account type
+      if (profile?.is_admin) {
+        window.location.href = 'pages/admin.html';
+      } else if (profile?.account_type === 'seller') {
+        // Seller goes to provider dashboard
+        window.location.href = 'pages/provider-dashboard.html';
+      } else {
+        // Buyer goes to seeker dashboard
+        window.location.href = 'pages/dashboard.html';
+      }
+      
     } catch (err) {
       showMsg(err.message, 'error');
       submitBtn.disabled = false;
