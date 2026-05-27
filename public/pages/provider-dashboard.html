@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusConnect - Provider Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="provider-dashboard.css">
+</head>
+<body class="light-mode">
+
+<!-- Mobile Menu Toggle -->
+<button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+
+<!-- Theme Toggle -->
+<button class="theme-toggle" id="themeToggle">
+  <i class="fas fa-sun"></i>
+</button>
+<div class="theme-label" id="themeLabel">Light mode</div>
+
+<div class="provider-dashboard">
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <i class="fas fa-graduation-cap"></i>
+        <span>CampusConnect</span>
+      </div>
+      <div class="role-badge">Seller</div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-item active" data-page="overview">
+        <i class="fas fa-chart-pie"></i>
+        <span>Overview</span>
+      </div>
+      <div class="nav-item" data-page="listings">
+        <i class="fas fa-tags"></i>
+        <span>My listings</span>
+      </div>
+      <div class="nav-item" data-page="orders">
+        <i class="fas fa-shopping-cart"></i>
+        <span>Orders</span>
+      </div>
+      <div class="nav-item" data-page="bookings">
+        <i class="fas fa-calendar"></i>
+        <span>Bookings</span>
+      </div>
+      <div class="nav-divider"></div>
+      <div class="nav-item" data-page="reviews">
+        <i class="fas fa-star"></i>
+        <span>Reviews</span>
+      </div>
+      <div class="nav-item" data-page="reports">
+        <i class="fas fa-chart-line"></i>
+        <span>Reports</span>
+      </div>
+      <div class="nav-item" data-page="settings">
+        <i class="fas fa-cog"></i>
+        <span>Settings</span>
+      </div>
+      <div class="nav-divider"></div>
+      <div class="nav-item" data-page="logout">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Log out</span>
+      </div>
+    </div>
+    <div class="sidebar-profile">
+      <div class="profile-avatar-small" id="sidebarAvatar">N</div>
+      <div class="profile-info-small">
+        <div class="name" id="sidebarName">Ntandokazi</div>
+        <div class="rank" id="sidebarRank">Side Hustle Rookie</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <!-- Overview Panel -->
+    <div id="overview-panel" class="content-panel active">
+      <div class="top-bar">
+        <div class="greeting">
+          <h1 id="greetingText">Good afternoon, Ntandokazi! 👋</h1>
+          <p id="currentDate"></p>
+        </div>
+        <div class="datetime">
+          <div class="time" id="currentTime">--:-- --</div>
+        </div>
+      </div>
+
+      <!-- Profile Section -->
+      <div class="profile-section">
+        <div class="profile-header">
+          <div class="profile-avatar-large" id="profileAvatar">N</div>
+          <div>
+            <h2 id="profileName">Ntandokazi</h2>
+            <p style="opacity: 0.7; font-size: 13px;" id="profileFaculty">Business and Economics</p>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <div class="profile-stat">
+            <div class="value" id="statListings">1</div>
+            <div class="label">Listings</div>
+          </div>
+          <div class="profile-stat">
+            <div class="value" id="statRating">—</div>
+            <div class="label">Rating</div>
+          </div>
+          <div class="profile-stat">
+            <div class="value" id="statXP">0</div>
+            <div class="label">XP</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Cards -->
+      <div class="dashboard-cards">
+        <div class="info-card">
+          <h4>📋 My listings</h4>
+          <div class="number" id="cardListings">1</div>
+          <div class="sub">Active services</div>
+        </div>
+        <div class="info-card">
+          <h4>📦 Incoming orders</h4>
+          <div class="number" id="cardOrders">0</div>
+          <div class="sub">Awaiting response</div>
+        </div>
+        <div class="info-card">
+          <h4>📅 My bookings</h4>
+          <div class="number" id="cardBookings">0</div>
+          <div class="sub">Services booked</div>
+        </div>
+      </div>
+
+      <!-- Messages Section -->
+      <div class="messages-section">
+        <h3><i class="fas fa-comment"></i> Messages</h3>
+        <div class="message-empty">
+          <i class="fas fa-envelope-open-text" style="font-size: 32px; margin-bottom: 12px; display: block;"></i>
+          <p>No conversations yet.</p>
+          <p style="font-size: 12px; margin-top: 8px;">When buyers message you, they'll appear here.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- My Listings Panel -->
+    <div id="listings-panel" class="content-panel">
+      <div class="top-bar">
+        <div class="greeting">
+          <h1>📋 My Listings</h1>
+          <p>All services you have listed</p>
+        </div>
+        <button class="new-listing-btn" id="newListingBtnHeader">
+          <i class="fas fa-plus"></i> New listing
+        </button>
+      </div>
+      <div class="export-cards">
+        <div class="export-card">
+          <h4>📋 My Listings</h4>
+          <p>Export your listings data</p>
+          <div class="export-buttons">
+            <button class="export-btn" onclick="exportData('listings', 'csv')">📄 CSV</button>
+            <button class="export-btn" onclick="exportData('listings', 'pdf')">📑 PDF</button>
+          </div>
+        </div>
+      </div>
+      <div id="listingsContainer" class="dashboard-cards">
+        <!-- Listings will appear here -->
+      </div>
+    </div>
+
+    <!-- Orders Panel -->
+    <div id="orders-panel" class="content-panel">
+      <div class="top-bar">
+        <div class="greeting">
+          <h1>📦 My Orders</h1>
+          <p>All orders you have received</p>
+        </div>
+      </div>
+      <div class="export-cards">
+        <div class="export-card">
+          <h4>📦 My Orders</h4>
+          <p>Export your orders data</p>
+          <div class="export-buttons">
+            <button class="export-btn" onclick="exportData('orders', 'csv')">📄 CSV</button>
+            <button class="export-btn" onclick="exportData('orders', 'pdf')">📑 PDF</button>
+          </div>
+        </div>
+      </div>
+      <div id="ordersContainer" class="message-empty">
+        <p>No orders yet</p>
+      </div>
+    </div>
+
+    <!-- Bookings Panel -->
+    <div id="bookings-panel" class="content-panel">
+      <div class="top-bar">
+        <div class="greeting">
+          <h1>📅 My Bookings Made</h1>
+          <p>Services you booked from others</p>
+        </div>
+      </div>
+      <div class="export-cards">
+        <div class="export-card">
+          <h4>📅 My Bookings</h4>
+          <p>Export your bookings data</p>
+          <div class="export-buttons">
+            <button class="export-btn" onclick="exportData('bookingsMade', 'csv')">📄 CSV</button>
+            <button class="export-btn" onclick="exportData('bookingsMade', 'pdf')">📑 PDF</button>
+          </div>
+        </div>
+      </div>
+      <div id="bookingsMadeContainer" class="message-empty">
+        <p>No bookings made yet</p>
+      </div>
+    </div>
+
+    <!-- Reviews Panel -->
+    <div id="reviews-panel" class="content-panel">
+      <div class="top-bar">
+        <div class="greeting">
+          <h1>⭐ Reviews Received</h1>
+          <p>Reviews left on your services</p>
+        </div>
+      </div>
+      <div class="export-cards">
+        <div class="export-card">
+          <h4>⭐ Reviews Received</h4>
+          <p>Export your reviews data</p>
+          <div class="export-buttons">
+            <button class="export-btn" onclick="exportData('reviews', 'csv')">📄 CSV</button>
+            <button class="export-btn" onclick="exportData('reviews', 'pdf')">📑 PDF</button>
+          </div>
+        </div>
+      </div>
+      <div id="reviewsContainer" class="message-empty">
+        <p>No reviews yet</p>
+      </div>
+    </div>
+
+    <!-- Reports Panel -->
+    <div id="reports-panel" class="content-panel">
+      <div class="top-bar">
+        <div class="greeting">
+          <h1>📊 Reports & Exports</h1>
+          <p>Download your data as CSV or PDF</p>
+        </div>
+      </div>
+      <div class="export-cards">
+        <div class="export-card">
+          <h4>📋 My Listings</h4>
+          <p>All services you have listed</p>
+          <div class="export-buttons">
+            <button class="export-btn" onclick="exportData('listings', 'csv')">📄 CSV</button>
+            <button class="export-btn" onclick="exportData('listings', 'pdf')">📑 PDF</button>
+          </div>
+        </div>
+        <div class="export-card">
+          <h4>📦 My Orders</h4>
+          <p>All orders you have received</p>
+          <div class="export-buttons">
+            <button class="export-btn" onclick="exportData('orders', 'csv')">📄 CSV</button>
+            <button class="export-btn" onclick="exportData('orders', 'pdf')">📑 PDF</button>
+          </div>
+        </div>
+        <div class="export-card">
+          <h4>📅 My Bookings Made</h4>
+          <p>Services you booked from others</p>
+          <div class="export-buttons">
+            <button class="export-btn" onclick="exportData('bookingsMade', 'csv')">📄 CSV</button>
+            <button class="export-btn" onclick="exportData('bookingsMade', 'pdf')">📑 PDF</button>
+          </div>
+        </div>
+        <div class="export-card">
+          <h4>⭐ Reviews Received</h4>
+          <p>Reviews left on your services</p>
+          <div class="export-buttons">
+            <button class="export-btn" onclick="exportData('reviews', 'csv')">📄 CSV</button>
+            <button class="export-btn" onclick="exportData('reviews', 'pdf')">📑 PDF</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div id="settings-panel" class="content-panel">
+      <div class="top-bar">
+        <div class="greeting">
+          <h1>⚙️ Settings</h1>
+          <p>Manage your account preferences</p>
+        </div>
+      </div>
+      <div class="settings-card">
+        <form id="settingsForm">
+          <div class="avatar-upload">
+            <div class="avatar-preview" id="avatarPreview">
+              <span id="avatarText">N</span>
+              <img id="avatarImg" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div>
+              <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/jpg" style="display: none;">
+              <button type="button" class="upload-btn" id="uploadAvatarBtn">📸 Upload Picture</button>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" id="settingsName" class="input-field" value="Ntandokazi">
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="settingsEmail" class="input-field" value="ntandokazi@campus.ac.za">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Faculty</label>
+              <input type="text" id="settingsFaculty" class="input-field" value="Business and Economics">
+            </div>
+            <div class="form-group">
+              <label>Year of Study</label>
+              <select id="settingsYear" class="input-field">
+                <option value="1">1st Year</option>
+                <option value="2">2nd Year</option>
+                <option value="3" selected>3rd Year</option>
+                <option value="4">4th Year</option>
+                <option value="5">Postgraduate</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Bio</label>
+            <textarea id="settingsBio" class="input-field" rows="3" placeholder="Tell students about yourself...">Passionate tutor and designer helping students succeed!</textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Skills (comma separated)</label>
+            <input type="text" id="settingsSkills" class="input-field" value="Tutoring, Graphic Design, Photography">
+          </div>
+
+          <div class="form-divider" style="height: 1px; background: rgba(0,0,0,0.1); margin: 20px 0;"></div>
+
+          <h3 style="margin-bottom: 16px; font-size: 18px;">Change Password</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Current Password</label>
+              <input type="password" id="currentPassword" class="input-field" placeholder="Enter current password">
+            </div>
+            <div class="form-group">
+              <label>New Password</label>
+              <input type="password" id="newPassword" class="input-field" placeholder="Enter new password">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Confirm New Password</label>
+            <input type="password" id="confirmPassword" class="input-field" placeholder="Confirm new password">
+          </div>
+
+          <button type="submit" class="save-btn" style="margin-top: 20px;">💾 Save All Changes</button>
+        </form>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<script src="js/provider-dashboard.js"></script>
+</body>
+</html>
