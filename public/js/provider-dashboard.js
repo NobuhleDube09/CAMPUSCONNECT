@@ -1,3 +1,6 @@
+document.addEventListener('DOMContentLoaded', async () => {
+  await Auth.requireAuth();
+});
 const STORAGE_KEYS = {
     PROFILE: 'campus_profile',
     LISTINGS: 'campus_listings',
@@ -7,26 +10,19 @@ const STORAGE_KEYS = {
     THEME: 'campus_theme'
   };
 
-  // ========== DEFAULT DATA ==========
-  let userData = {
-    name: 'Ntandokazi',
-    email: 'ntandokazi@campus.ac.za',
-    faculty: 'Business and Economics',
-    year: '3',
-    bio: 'Passionate tutor and designer helping students succeed!',
-    skills: 'Tutoring, Graphic Design, Photography',
-    avatar: null,
-    listings: 1,
-    rating: null,
-    xp: 0,
-    orders: 0,
-    bookingsMade: 0,
-    reviews: 0
-  };
+ async function loadProfile() {
+  const profile = await Auth.getProfile();
 
-  let listingsData = [
-    { id: 1, title: 'Math Tutoring', category: 'Tutoring', price: 'R250/hr', status: 'Active' }
-  ];
+  if (!profile) return;
+
+  userData.name = profile.name || '';
+  userData.email = profile.email || '';
+  userData.faculty = profile.faculty || '';
+  
+  updateUI();
+}
+
+loadProfile();
 
   // ========== TOAST FUNCTION ==========
   function showToast(message, isError = false) {
@@ -266,7 +262,7 @@ const STORAGE_KEYS = {
       if (page === 'logout') {
         showToast('🚪 Logging out...');
         setTimeout(() => {
-          window.location.href = 'index.html';
+          window.location.href = '../index.html';
         }, 1000);
       } else {
         switchToPanel(page);
