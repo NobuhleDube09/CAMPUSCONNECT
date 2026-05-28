@@ -54,9 +54,20 @@ const api = {
       body: formData,
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) { const e = new Error(data.error || `HTTP ${res.status}`); e.status = res.status; throw e; }
+    if (!res.ok) { 
+      const e = new Error(data.error || `HTTP ${res.status}`); 
+      e.status = res.status; 
+      throw e; 
+    }
     return data;
   },
+};
+
+// Helper function for direct fetch calls (used in browse)
+window.fetchAPI = async (endpoint) => {
+  const response = await fetch(endpoint);
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return response.json();
 };
 
 window.api = api;
