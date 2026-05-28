@@ -1,7 +1,5 @@
-document.addEventListener('DOMContentLoaded', async () => {
-  await Auth.requireAuth();
-});
-const STORAGE_KEYS = {
+// ========== STORAGE KEYS ==========
+  const STORAGE_KEYS = {
     PROFILE: 'campus_profile',
     LISTINGS: 'campus_listings',
     ORDERS: 'campus_orders',
@@ -10,23 +8,29 @@ const STORAGE_KEYS = {
     THEME: 'campus_theme'
   };
 
- async function loadProfile() {
-  const profile = await Auth.getProfile();
+  // ========== DEFAULT EMPTY DATA (No hardcoded user data) ==========
+  let userData = {
+    name: '',
+    email: '',
+    faculty: '',
+    year: '3',
+    bio: '',
+    skills: '',
+    avatar: null,
+    listings: 0,
+    rating: null,
+    xp: 0,
+    orders: 0,
+    bookingsMade: 0,
+    reviews: 0
+  };
 
-  if (!profile) return;
-
-  userData.name = profile.name || '';
-  userData.email = profile.email || '';
-  userData.faculty = profile.faculty || '';
-  
-  updateUI();
-}
-
-loadProfile();
+  let listingsData = [];
 
   // ========== TOAST FUNCTION ==========
   function showToast(message, isError = false) {
     const toast = document.getElementById('toast');
+    if (!toast) return;
     toast.textContent = message;
     toast.style.background = isError ? 'linear-gradient(135deg, #ef4444, #dc2626)' : 'linear-gradient(135deg, #f97316, #f43f5e)';
     toast.classList.add('show');
@@ -39,21 +43,25 @@ loadProfile();
   function updateDateTime() {
     const now = new Date();
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    document.getElementById('currentDate').innerHTML = now.toLocaleDateString('en-US', options).toUpperCase();
+    const dateEl = document.getElementById('currentDate');
+    if (dateEl) dateEl.innerHTML = now.toLocaleDateString('en-US', options).toUpperCase();
     
     let hours = now.getHours();
     const minutes = now.getMinutes().toString().padStart(2, '0');
     const ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12 || 12;
-    document.getElementById('currentTime').innerHTML = `${hours}:${minutes} ${ampm}`;
+    const timeEl = document.getElementById('currentTime');
+    if (timeEl) timeEl.innerHTML = `${hours}:${minutes} ${ampm}`;
     
     const greeting = hours < 12 ? 'Good morning' : hours < 18 ? 'Good afternoon' : 'Good evening';
-    document.getElementById('greetingText').innerHTML = `${greeting}, ${userData.name}! 👋`;
+    const nameToShow = userData.name || 'Seller';
+    const greetingEl = document.getElementById('greetingText');
+    if (greetingEl) greetingEl.innerHTML = `${greeting}, ${nameToShow}! 👋`;
   }
   setInterval(updateDateTime, 1000);
   updateDateTime();
 
-  // ========== LOAD/SAVE DATA ==========
+  // ========== LOAD DATA FROM LOCALSTORAGE ==========
   function loadUserData() {
     const saved = localStorage.getItem(STORAGE_KEYS.PROFILE);
     if (saved) {
@@ -63,6 +71,18 @@ loadProfile();
     
     const savedListings = localStorage.getItem(STORAGE_KEYS.LISTINGS);
     if (savedListings) listingsData = JSON.parse(savedListings);
+    
+    // If still empty, try to get from session
+    if (!userData.name) {
+      const sessionUser = localStorage.getItem('cc_user');
+      if (sessionUser) {
+        try {
+          const parsed = JSON.parse(sessionUser);
+          userData.name = parsed.email?.split('@')[0] || 'User';
+          userData.email = parsed.email || '';
+        } catch(e) {}
+      }
+    }
     
     updateUI();
   }
@@ -76,45 +96,91 @@ loadProfile();
 
   function updateUI() {
     // Update sidebar
-    document.getElementById('sidebarName').innerHTML = userData.name;
-    document.getElementById('profileName').innerHTML = userData.name;
-    document.getElementById('profileFaculty').innerHTML = userData.faculty;
+    const sidebarName = document.getElementById('sidebarName');
+    const profileName = document.getElementById('profileName');
+    const profileFaculty = document.getElementById('profileFaculty');
+    const sidebarAvatar = document.getElementById('sidebarAvatar');
+    const profileAvatar = document.getElementById('profileAvatar');
+    const avatarText = document.getElementById('avatarText');
+    
+    const displayName = userData.name || 'Seller';
+    const initial = displayName.charAt(0).toUpperCase();
+    
+    if (sidebarName) sidebarName.innerHTML = displayName;
+    if (profileName) profileName.innerHTML = displayName;
+    if (profileFaculty) profileFaculty.innerHTML = userData.faculty || 'Not specified';
+    if (sidebarAvatar) sidebarAvatar.innerHTML = initial;
+    if (profileAvatar) profileAvatar.innerHTML = initial;
     
     // Update stats
-    document.getElementById('statListings').innerHTML = listingsData.length;
-    document.getElementById('statRating').innerHTML = userData.rating || '—';
-    document.getElementById('statXP').innerHTML = userData.xp;
-    document.getElementById('cardListings').innerHTML = listingsData.length;
-    document.getElementById('cardOrders').innerHTML = userData.orders;
-    document.getElementById('cardBookings').innerHTML = userData.bookingsMade;
+    const statListings = document.getElementById('statListings');
+    const statRating = document.getElementById('statRating');
+    const statXP = document.getElementById('statXP');
+    const cardListings = document.getElementById('cardListings');
+    const cardOrders = document.getElementById('cardOrders');
+    const cardBookings = document.getElementById('cardBookings');
+    
+    if (statListings) statListings.innerHTML = listingsData.length;
+    if (statRating) statRating.innerHTML = userData.rating || '—';
+    if (statXP) statXP.innerHTML = userData.xp || 0;
+    if (cardListings) cardListings.innerHTML = listingsData.length;
+    if (cardOrders) cardOrders.innerHTML = userData.orders || 0;
+    if (cardBookings) cardBookings.innerHTML = userData.bookingsMade || 0;
+    
+    // Update settings form
+    const settingsName = document.getElementById('settingsName');
+    const settingsEmail = document.getElementById('settingsEmail');
+    const settingsFaculty = document.getElementById('settingsFaculty');
+    const settingsYear = document.getElementById('settingsYear');
+    const settingsBio = document.getElementById('settingsBio');
+    const settingsSkills = document.getElementById('settingsSkills');
+    
+    if (settingsName) settingsName.value = userData.name || '';
+    if (settingsEmail) settingsEmail.value = userData.email || '';
+    if (settingsFaculty) settingsFaculty.value = userData.faculty || '';
+    if (settingsYear) settingsYear.value = userData.year || '3';
+    if (settingsBio) settingsBio.value = userData.bio || '';
+    if (settingsSkills) settingsSkills.value = userData.skills || '';
     
     // Update avatar
     if (userData.avatar) {
-      document.getElementById('avatarImg').src = userData.avatar;
-      document.getElementById('avatarImg').style.display = 'block';
-      document.getElementById('avatarText').style.display = 'none';
-      document.getElementById('sidebarAvatar').innerHTML = '<img src="' + userData.avatar + '" style="width:100%;height:100%;object-fit:cover;border-radius:12px">';
-      document.getElementById('profileAvatar').innerHTML = '<img src="' + userData.avatar + '" style="width:100%;height:100%;object-fit:cover;border-radius:24px">';
+      const avatarImg = document.getElementById('avatarImg');
+      if (avatarImg) {
+        avatarImg.src = userData.avatar;
+        avatarImg.style.display = 'block';
+      }
+      if (avatarText) avatarText.style.display = 'none';
+      if (sidebarAvatar) sidebarAvatar.innerHTML = '<img src="' + userData.avatar + '" style="width:100%;height:100%;object-fit:cover;border-radius:12px">';
+      if (profileAvatar) profileAvatar.innerHTML = '<img src="' + userData.avatar + '" style="width:100%;height:100%;object-fit:cover;border-radius:24px">';
     } else {
-      document.getElementById('avatarImg').style.display = 'none';
-      document.getElementById('avatarText').style.display = 'flex';
-      document.getElementById('sidebarAvatar').innerHTML = userData.name.charAt(0);
-      document.getElementById('profileAvatar').innerHTML = userData.name.charAt(0);
+      const avatarImg = document.getElementById('avatarImg');
+      if (avatarImg) avatarImg.style.display = 'none';
+      if (avatarText) avatarText.style.display = 'flex';
+      if (avatarText) avatarText.innerHTML = initial;
     }
     
     // Update listings display
     const listingsContainer = document.getElementById('listingsContainer');
-    if (listingsContainer && listingsData.length > 0) {
-      listingsContainer.innerHTML = listingsData.map(listing => `
-        <div class="info-card">
-          <h4>📖 ${listing.title}</h4>
-          <div class="number">${listing.price}</div>
-          <div class="sub">${listing.category} • ${listing.status}</div>
-        </div>
-      `).join('');
-    } else if (listingsContainer) {
-      listingsContainer.innerHTML = '<div class="message-empty"><p>No listings yet. Create your first listing!</p></div>';
+    if (listingsContainer) {
+      if (listingsData.length === 0) {
+        listingsContainer.innerHTML = '<div class="message-empty"><p>No listings yet. Create your first listing!</p></div>';
+      } else {
+        listingsContainer.innerHTML = listingsData.map(listing => `
+          <div class="info-card">
+            <h4>📖 ${escapeHtml(listing.title)}</h4>
+            <div class="number">${listing.price}</div>
+            <div class="sub">${escapeHtml(listing.category)} • ${listing.status || 'Active'}</div>
+          </div>
+        `).join('');
+      }
     }
+  }
+
+  function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
 
   // ========== EXPORT FUNCTIONS ==========
@@ -139,6 +205,13 @@ loadProfile();
         data = [{ message: 'No reviews yet' }];
         filename = 'my_reviews';
         break;
+      default:
+        return;
+    }
+    
+    if (data.length === 0 || (data[0] && data[0].message)) {
+      showToast('No data to export', true);
+      return;
     }
     
     if (format === 'csv') {
@@ -162,76 +235,95 @@ loadProfile();
   }
 
   // ========== AVATAR UPLOAD ==========
-  document.getElementById('uploadAvatarBtn').addEventListener('click', () => {
-    document.getElementById('avatarInput').click();
-  });
+  const uploadBtn = document.getElementById('uploadAvatarBtn');
+  if (uploadBtn) {
+    uploadBtn.addEventListener('click', () => {
+      document.getElementById('avatarInput')?.click();
+    });
+  }
   
-  document.getElementById('avatarInput').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        userData.avatar = ev.target.result;
-        updateUI();
-        saveUserData();
-      };
-      reader.readAsDataURL(file);
-    }
-  });
+  const avatarInput = document.getElementById('avatarInput');
+  if (avatarInput) {
+    avatarInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          userData.avatar = ev.target.result;
+          updateUI();
+          saveUserData();
+          showToast('Profile picture updated!');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
 
   // ========== SETTINGS FORM ==========
-  document.getElementById('settingsForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    userData.name = document.getElementById('settingsName').value;
-    userData.email = document.getElementById('settingsEmail').value;
-    userData.faculty = document.getElementById('settingsFaculty').value;
-    userData.bio = document.getElementById('settingsBio').value;
-    userData.skills = document.getElementById('settingsSkills').value;
-    
-    const newPassword = document.getElementById('newPassword').value;
-    const confirmPassword = document.getElementById('confirmPassword').value;
-    const currentPassword = document.getElementById('currentPassword').value;
-    
-    if (newPassword) {
-      if (newPassword.length < 6) {
-        showToast('Password must be at least 6 characters', true);
-        return;
+  const settingsForm = document.getElementById('settingsForm');
+  if (settingsForm) {
+    settingsForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      userData.name = document.getElementById('settingsName')?.value || userData.name;
+      userData.email = document.getElementById('settingsEmail')?.value || userData.email;
+      userData.faculty = document.getElementById('settingsFaculty')?.value || userData.faculty;
+      userData.bio = document.getElementById('settingsBio')?.value || userData.bio;
+      userData.skills = document.getElementById('settingsSkills')?.value || userData.skills;
+      
+      const newPassword = document.getElementById('newPassword')?.value;
+      const confirmPassword = document.getElementById('confirmPassword')?.value;
+      
+      if (newPassword) {
+        if (newPassword.length < 6) {
+          showToast('Password must be at least 6 characters', true);
+          return;
+        }
+        if (newPassword !== confirmPassword) {
+          showToast('Passwords do not match', true);
+          return;
+        }
+        showToast('Password updated successfully!');
+        const currentPw = document.getElementById('currentPassword');
+        const newPw = document.getElementById('newPassword');
+        const confirmPw = document.getElementById('confirmPassword');
+        if (currentPw) currentPw.value = '';
+        if (newPw) newPw.value = '';
+        if (confirmPw) confirmPw.value = '';
       }
-      if (newPassword !== confirmPassword) {
-        showToast('Passwords do not match', true);
-        return;
-      }
-      showToast('Password updated successfully!');
-      document.getElementById('currentPassword').value = '';
-      document.getElementById('newPassword').value = '';
-      document.getElementById('confirmPassword').value = '';
-    }
-    
-    saveUserData();
-  });
+      
+      saveUserData();
+    });
+  }
 
   // ========== THEME TOGGLE ==========
   function setTheme(theme) {
+    const body = document.body;
+    const themeToggle = document.getElementById('themeToggle');
+    const themeLabel = document.getElementById('themeLabel');
+    
     if (theme === 'dark') {
-      document.body.classList.remove('light-mode');
-      document.body.classList.add('dark-mode');
-      document.getElementById('themeToggle').innerHTML = '<i class="fas fa-moon"></i>';
-      document.getElementById('themeLabel').innerHTML = 'Dark mode';
+      body.classList.remove('light-mode');
+      body.classList.add('dark-mode');
+      if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+      if (themeLabel) themeLabel.innerHTML = 'Dark mode';
       localStorage.setItem(STORAGE_KEYS.THEME, 'dark');
     } else {
-      document.body.classList.remove('dark-mode');
-      document.body.classList.add('light-mode');
-      document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
-      document.getElementById('themeLabel').innerHTML = 'Light mode';
+      body.classList.remove('dark-mode');
+      body.classList.add('light-mode');
+      if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+      if (themeLabel) themeLabel.innerHTML = 'Light mode';
       localStorage.setItem(STORAGE_KEYS.THEME, 'light');
     }
   }
 
-  document.getElementById('themeToggle').addEventListener('click', () => {
-    const isDark = document.body.classList.contains('dark-mode');
-    setTheme(isDark ? 'light' : 'dark');
-  });
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const isDark = document.body.classList.contains('dark-mode');
+      setTheme(isDark ? 'light' : 'dark');
+    });
+  }
 
   const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME);
   if (savedTheme) setTheme(savedTheme);
@@ -242,7 +334,8 @@ loadProfile();
     document.querySelectorAll('.content-panel').forEach(panel => {
       panel.classList.remove('active');
     });
-    document.getElementById(`${panelId}-panel`).classList.add('active');
+    const targetPanel = document.getElementById(`${panelId}-panel`);
+    if (targetPanel) targetPanel.classList.add('active');
     
     document.querySelectorAll('.nav-item').forEach(item => {
       item.classList.remove('active');
@@ -252,9 +345,15 @@ loadProfile();
     });
     
     if (window.innerWidth <= 1000) {
-      document.getElementById('sidebar').classList.remove('open');
+      const sidebar = document.getElementById('sidebar');
+      if (sidebar) sidebar.classList.remove('open');
     }
   }
+
+  // Make functions globally available
+  window.switchToPanel = switchToPanel;
+  window.exportData = exportData;
+  window.showToast = showToast;
 
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', () => {
@@ -262,6 +361,9 @@ loadProfile();
       if (page === 'logout') {
         showToast('🚪 Logging out...');
         setTimeout(() => {
+          localStorage.removeItem('cc_session');
+          localStorage.removeItem('cc_user');
+          localStorage.removeItem('cc_profile');
           window.location.href = '../index.html';
         }, 1000);
       } else {
@@ -271,14 +373,22 @@ loadProfile();
   });
 
   // ========== NEW LISTING BUTTON ==========
-  document.getElementById('newListingBtnHeader')?.addEventListener('click', () => {
-    showToast('➕ Create new listing - Feature coming soon!');
-  });
+  const newListingBtn = document.getElementById('newListingBtnHeader');
+  if (newListingBtn) {
+    newListingBtn.addEventListener('click', () => {
+      window.location.href = 'listing-form.html';
+    });
+  }
 
   // ========== MOBILE MENU ==========
-  document.getElementById('menuToggle')?.addEventListener('click', () => {
-    document.getElementById('sidebar').classList.toggle('open');
-  });
+  const menuToggle = document.getElementById('menuToggle');
+  if (menuToggle) {
+    menuToggle.addEventListener('click', () => {
+      const sidebar = document.getElementById('sidebar');
+      if (sidebar) sidebar.classList.toggle('open');
+    });
+  }
 
   // ========== INITIALIZE ==========
   loadUserData();
+  updateDateTime();
