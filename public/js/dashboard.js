@@ -615,6 +615,242 @@ async function initBrowse() {
   
   await load();
 }
+// ========== BOOKINGS FUNCTIONALITY ==========
+let allBookings = [];
+let currentBookingFilter = 'all';
+
+async function loadUserBookings() {
+  const container = document.getElementById('bookingsFullContainer');
+  if (!container) return;
+  
+  try {
+    const token = window.Auth?.accessToken;
+    if (!token) {
+      container.innerHTML = '<div class="empty-bookings"><i class="fas fa-calendar-alt"></i><h3>Please log in</h3><p>Log in to see your bookings</p></div>';
+      return;
+    }
+    
+    const response = await fetch('/api/bookings/mine?role=buyer', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    
+    if (!response.ok) throw new Error('Failed to load bookings');
+    
+    const data = await response.json();
+    allBookings = data.orders || [];
+    renderBookings();
+    
+  } catch (error) {
+    console.error('Error loading bookings:', error);
+    container.innerHTML = '<div class="empty-bookings"><i class="fas fa-exclamation-triangle"></i><h3>Error loading bookings</h3><p>' + error.message + '</p></div>';
+  }
+}
+
+function renderBookings() {
+  const container = document.getElementById('bookingsFullContainer');
+  if (!container) return;
+  
+  let filteredBookings = allBookings;
+  if (currentBookingFilter !== 'all') {
+    filteredBookings = allBookings.filter(b => b.status === currentBookingFilter);
+  }
+  
+  if (filteredBookings.length === 0) {
+    container.innerHTML = `
+      <div class="empty-bookings">
+        <i class="fas fa-calendar-alt"></i>
+        <h3>No bookings found</h3>
+        <p>${currentBookingFilter === 'all' ? 'You haven\'t booked any services yet.' : `No ${currentBookingFilter} bookings.`}</p>
+        <button class="booking-action-btn primary" onclick="switchToPanel('browse')">Browse Services →</button>
+      </div>
+    `;
+    return;
+  }
+  
+  container.innerHTML = filteredBookings.map(booking => `
+    <div class="booking-card" data-booking-id="${booking.id}">
+      <div class="booking-header">
+        <div>
+          <div class="booking-title">${escapeHtml(booking.listing?.title || 'Service')}</div>
+          <div class="booking-seller">
+            <i class="fas fa-store"></i>
+            <span>Seller: ${escapeHtml(booking.seller?.name || 'Unknown')}</span>
+          </div>
+        </div>
+        <div class="booking-price">R${booking.agreed_price || booking.listing?.price || 0}</div>
+      </div>
+      
+      <div class="booking-details">
+        <div class="booking-detail">
+          <i class="fas fa-calendar"></i>
+          <span>Booked: ${formatBookingDate(booking.created_at)}</span>
+        </div>
+        ${booking.preferred_datetime ? `
+        <div class="booking-detail">
+          <i class="fas fa-clock"></i>
+          <span>Preferred: ${formatBookingDate(booking.preferred_datetime)}</span>
+        </div>` : ''}
+        ${booking.deadline ? `
+        <div class="booking-detail">
+          <i class="fas fa-hourglass-half"></i>
+          <span>Deadline: ${formatBookingDate(booking.deadline)}</span>
+        </div>` : ''}
+      </div>
+      
+      ${booking.buyer_message ? `
+      <div style="background: #f8fafc; padding: 12px; border-radius: 12px; margin-bottom: 16px;">
+        <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Your message:</div>
+        <div style="font-size: 14px;">"${escapeHtml(booking.buyer_message)}"</div>
+      </div>
+      ` : ''}
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <span class="booking-status status-${booking.status}">${booking.status.toUpperCase()}</span>
+        <div class="booking-actions">
+          ${booking.status === 'accepted' ? `
+            <button class="booking-action-btn primary" onclick="markBookingComplete('${booking.id}')">
+              <i class="fas fa-check"></i> Mark Complete
+            </button>
+          ` : ''}
+          ${booking.status === 'completed' ? `
+            <button class="booking-action-btn secondary" onclick="leaveReview('${booking.id}', '${escapeHtml(booking.listing?.title || 'Service')}')">
+              <i class="fas fa-star"></i> Leave Review
+            </button>
+          ` : ''}
+          <button class="booking-action-btn secondary" onclick="messageSeller('${booking.seller_id}')">
+            <i class="fas fa-comment"></i> Message Seller
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function formatBookingDate(dateString) {
+  if (!dateString) return 'N/A';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+async function markBookingComplete(orderId) {
+  const confirmed = confirm('Mark this order as complete? You will be able to leave a review afterward.');
+  if (!confirmed) return;
+  
+  try {
+    const token = window.Auth?.accessToken;
+    const response = await fetch(`/api/bookings/${orderId}/complete`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) throw new Error('Failed to mark complete');
+    
+    showToast('✅ Order marked as complete! You can now leave a review.');
+    setTimeout(() => loadUserBookings(), 1000);
+    
+  } catch (error) {
+    console.error('Error:', error);
+    showToast('Failed to mark complete', true);
+  }
+}
+
+function leaveReview(orderId, serviceTitle) {
+  // Store order ID for review modal
+  window.currentReviewOrderId = orderId;
+  window.currentReviewServiceTitle = serviceTitle;
+  
+  // You can open a review modal here
+  showToast(`Leave a review for "${serviceTitle}" - Feature coming soon!`);
+}
+
+function messageSeller(sellerId) {
+  window.location.href = `/pages/inbox.html?sellerId=${sellerId}`;
+}
+
+async function exportBookingsData(format) {
+  if (allBookings.length === 0) {
+    showToast('No bookings to export', true);
+    return;
+  }
+  
+  const exportData = allBookings.map(booking => ({
+    'Service': booking.listing?.title || 'N/A',
+    'Seller': booking.seller?.name || 'N/A',
+    'Price': booking.agreed_price || booking.listing?.price || 0,
+    'Status': booking.status,
+    'Booked Date': formatBookingDate(booking.created_at),
+    'Preferred Date': formatBookingDate(booking.preferred_datetime),
+    'Message': booking.buyer_message || 'N/A'
+  }));
+  
+  if (format === 'csv') {
+    const headers = Object.keys(exportData[0]);
+    const csvRows = [headers.join(',')];
+    for (const row of exportData) {
+      const values = headers.map(header => `"${String(row[header]).replace(/"/g, '""')}"`);
+      csvRows.push(values.join(','));
+    }
+    const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `my_bookings_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('📄 Bookings exported as CSV!');
+  } else {
+    showToast('📑 PDF export coming soon!');
+  }
+}
+
+// Add booking filter event listeners
+function initBookingFilters() {
+  const filterBtns = document.querySelectorAll('.booking-filter-btn');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => {
+        b.classList.remove('active');
+        b.style.background = 'white';
+        b.style.color = '#4b5563';
+      });
+      btn.classList.add('active');
+      btn.style.background = '#f97316';
+      btn.style.color = 'white';
+      currentBookingFilter = btn.dataset.status;
+      renderBookings();
+    });
+  });
+}
+
+// Update switchToPanel to load bookings when switching
+const originalSwitchToPanel = window.switchToPanel;
+window.switchToPanel = function(panelId) {
+  if (originalSwitchToPanel) originalSwitchToPanel(panelId);
+  if (panelId === 'bookings') {
+    setTimeout(() => {
+      loadUserBookings();
+      initBookingFilters();
+    }, 100);
+  }
+  if (panelId === 'browse') {
+    setTimeout(() => initBrowse(), 100);
+  }
+  if (panelId === 'inbox') {
+    setTimeout(() => initInbox(), 100);
+  }
+};
+
+// Also load bookings if panel is active on page load
+if (document.getElementById('bookings-panel')?.classList.contains('active')) {
+  setTimeout(() => {
+    loadUserBookings();
+    initBookingFilters();
+  }, 100);
+}
+
 // ========== INBOX FUNCTIONALITY ==========
 let currentConversationId = null;
 let messageSubscription = null;

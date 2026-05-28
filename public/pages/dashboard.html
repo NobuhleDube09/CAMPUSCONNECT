@@ -171,44 +171,88 @@
   </div>
 </div>
 
-    <!-- Browse Panel -->
-    <div id="browse-panel" class="content-panel">
-      <div class="top-bar">
-        <div class="greeting">
-          <h1>🔍 Browse Services</h1>
-          <p>Find the perfect service for your needs</p>
+<!-- Browse Panel -->
+<div id="browse-panel" class="content-panel">
+  <div class="top-bar">
+    <div class="greeting">
+      <h1>🔍 Browse Services</h1>
+      <p>Find the perfect service for your needs</p>
+    </div>
+    <a class="b-btn b-btn-primary" href="/pages/listing-form.html" style="background: linear-gradient(135deg, #f97316, #f43f5e); color: white; padding: 10px 20px; border-radius: 40px; text-decoration: none; font-size: 14px; font-weight: 600;">
+      <i class="fas fa-plus"></i> List a service
+    </a>
+  </div>
+  
+  <!-- Browse Content Container -->
+  <div id="browseContentContainer">
+    <!-- Filter Card -->
+    <div class="b-filter-card" style="background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+      <div class="b-filter-row" style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+        <div class="b-filter-search" style="flex: 1; position: relative; min-width: 200px;">
+          <span class="b-filter-search-icon" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%);">🔍</span>
+          <input type="text" id="searchInput" placeholder="Search services, skills, sellers..." style="width: 100%; padding: 12px 12px 12px 40px; border: 1px solid #e2e8f0; border-radius: 12px; font-family: inherit;">
         </div>
+        <select id="sortSelect" class="b-filter-sort" style="padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; background: white; min-width: 140px;">
+          <option value="created_at">Latest</option>
+          <option value="price_asc">Price: Low to High</option>
+          <option value="price_desc">Price: High to Low</option>
+          <option value="rating">Top rated</option>
+        </select>
       </div>
-      <div class="empty-state" style="margin-top: 20px;">
-        <i class="fas fa-search"></i>
-        <p>Browse feature coming soon!</p>
-        <p style="font-size: 13px; margin-top: 8px;">Discover tutors, designers, and more on CampusConnect.</p>
-        <button class="browse-btn" onclick="showToast('🔍 Browse services - Coming soon!')">Start Exploring →</button>
+      <div class="b-cat-pills" id="categoryPills" style="display: flex; flex-wrap: wrap; gap: 8px;">
+        <button class="b-cat-pill active" data-cat="" style="padding: 6px 14px; border-radius: 20px; border: 1px solid #e2e8f0; background: #f97316; color: white; cursor: pointer;">All Categories</button>
       </div>
     </div>
 
-    <!-- My Bookings Panel -->
-    <div id="bookings-panel" class="content-panel">
-      <div class="top-bar">
-        <div class="greeting">
-          <h1>📅 My Bookings</h1>
-          <p>Services you have booked</p>
-        </div>
-      </div>
-      <div class="export-cards">
-        <div class="export-card">
-          <h4>📅 My Bookings</h4>
-          <p>Export your bookings data</p>
-          <div class="export-buttons">
-            <button class="export-btn" onclick="exportData('bookings', 'csv')">📄 CSV</button>
-            <button class="export-btn" onclick="exportData('bookings', 'pdf')">📑 PDF</button>
-          </div>
-        </div>
-      </div>
-      <div id="bookingsFullContainer">
-        <!-- Full bookings list -->
+    <!-- Results bar -->
+    <div class="b-results-bar" style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+      <span class="b-results-count" id="resultsCount">&nbsp;</span>
+    </div>
+
+    <!-- Listings Grid -->
+    <div id="listingsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+      <div class="loading-wrap" style="text-align: center; padding: 40px;"><div class="spinner"></div><p>Loading services...</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- My Bookings Panel -->
+<div id="bookings-panel" class="content-panel">
+  <div class="top-bar">
+    <div class="greeting">
+      <h1>📅 My Bookings</h1>
+      <p>Services you have booked from sellers</p>
+    </div>
+  </div>
+  
+  <!-- Filter Tabs for Bookings -->
+  <div class="booking-filters" style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+    <button class="booking-filter-btn active" data-status="all" style="padding: 8px 20px; border-radius: 30px; border: 1px solid #e2e8f0; background: #f97316; color: white; cursor: pointer; font-weight: 600;">All</button>
+    <button class="booking-filter-btn" data-status="pending" style="padding: 8px 20px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; cursor: pointer;">Pending</button>
+    <button class="booking-filter-btn" data-status="accepted" style="padding: 8px 20px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; cursor: pointer;">Accepted</button>
+    <button class="booking-filter-btn" data-status="completed" style="padding: 8px 20px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; cursor: pointer;">Completed</button>
+    <button class="booking-filter-btn" data-status="declined" style="padding: 8px 20px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; cursor: pointer;">Declined</button>
+  </div>
+  
+  <div class="export-cards">
+    <div class="export-card">
+      <h4>📅 My Bookings</h4>
+      <p>Export your bookings data as CSV or PDF</p>
+      <div class="export-buttons">
+        <button class="export-btn" onclick="exportBookingsData('csv')">📄 Export CSV</button>
+        <button class="export-btn" onclick="exportBookingsData('pdf')">📑 Export PDF</button>
       </div>
     </div>
+  </div>
+  
+  <div id="bookingsFullContainer">
+    <!-- Bookings will be loaded here dynamically -->
+    <div class="loading-wrap" style="text-align: center; padding: 40px;">
+      <div class="spinner"></div>
+      <p>Loading your bookings...</p>
+    </div>
+  </div>
+</div>
 
     <!-- Reviews Panel -->
     <div id="reviews-panel" class="content-panel">
