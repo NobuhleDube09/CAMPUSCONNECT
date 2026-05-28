@@ -504,3 +504,8 @@ main {
     color: #94a3b8;
     font-size: 14px;
 }
+
+.footer-section a {
+    display: block;
+    margin: 5px 0;
+}
